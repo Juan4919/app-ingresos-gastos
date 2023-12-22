@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block pageBase %}
+<h1>Esto es {{tipoAccion}} de Ingresos y Gastos</h1>
+
+<form method="POST">
+  <label>Fecha:</label><br>
+  <input type="date" name="fecha" value="{{dataForm['fecha']}}"><br>
+  <label>Concepto:</label><br>
+  <input type="text" name="concepto" value="{{dataForm['concepto']}}"><br>
+  <label>Monto:</label><br>
+  <input type="number" name="monto" step="0.01" value="{{dataForm['monto']}}"><br><br>
+  <button type="submit">{{tipoBoton}}</button><br>
+</form>
+<br>
+<button>
+  <a href="/">Volver</a>
+</button>
+
+<div style="color: red;">
+  
+ 
+  <ul >
+    {% for item in error %}
+      <li >{{ item }}</li>
+    {% endfor %}
+  </ul>
+
+</div>
+
+{% endblock %}
