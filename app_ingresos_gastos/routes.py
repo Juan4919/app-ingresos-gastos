@@ -1,19 +1,12 @@
-from app_ingresos_gastos import app
+from app_ingresos_gastos import app,MOVIMIENTOS_FILE,LAST_ID_FILE
 from flask import render_template,request,redirect
 import csv
 from datetime import date
+from app_ingresos_gastos.models import *
 
 @app.route("/")#get
 def index():
-    datos =[]
-    #llamada al archivo csv
-    fichero = open('data/movimientos.csv','r')
-    #accediendo a cada registro de archivo y darle formato
-    csvReader = csv.reader(fichero,delimiter=",",quotechar='"')
-    for items in csvReader:
-        datos.append(items)
-    fichero.close()
-
+    datos = select_all()
     return render_template("index.html",data = datos,titulo="Lista")
 
 @app.route("/new",methods=["GET","POST"])
@@ -26,60 +19,48 @@ def new():
             return render_template("new.html",titulo="Nuevo",tipoAccion="Registro",tipoBoton="Guardar",error = comprobar_error,dataForm=request.form)
         
         else:
-            ######################Generar el nuevo id para registro################
-            lista_id = []
-            last_id = ""
-            new_id = 0
-            ficheroId = open('data/last_id.csv','r')
-            #accediendo a cada registro de archivo y darle formato
-            csvReaderId = csv.reader(ficheroId,delimiter=",",quotechar='"')
-            for items in csvReaderId:
-                lista_id.append(items[0])
-            ficheroId.close()
 
-            last_id = lista_id[len(lista_id)-1] #el ultimo valor del id    
-            new_id = int(last_id)+1
-            ######################Guardar el id generado en last_id###############
-            fichero_new_id=open('data/last_id.csv','w')
-            fichero_new_id.write(str(new_id))
-            fichero_new_id.close()
-
-            ########################################################################
-            #acceder al archivo y configurar para la carga de nuevo registro
-            mifichero = open('data/movimientos.csv','a',newline='')
-            #llamar al metodo writer de escritura y configuramos formato
-            lectura = csv.writer(mifichero,delimiter=',', quotechar='"')
-            #registramos los datos recibidos en el archivo csv
-            lectura.writerow([ new_id,request.form['fecha'],request.form['concepto'],request.form['monto'] ])
-            mifichero.close()
+            insert(request.form)
 
             return redirect("/")
         
     else:#si es GET
-        return render_template("new.html",titulo="Nuevo",tipoAccion="Registro",tipoBoton="Guardar",dataForm={} )
+        return render_template("new.html",titulo="Nuevo",tipoAccion="Registro",tipoBoton="Guardar",dataForm={} ,urlForm="/new")
 
-@app.route("/delete/<int:id>")
+@app.route("/delete/<int:id>",methods=["GET","POST"])
 def delete(id):
-    #-Consultar en data/movimientos csv y recuperar el registro con el id de la petición
-    #-devolver al formulario delete.html una previsualización para luego borrarlo definitivamente con un boton
+    if request.method == "GET":
 
-    miFicheroDelete= open('data/movimientos.csv','r')
-    lecturaDelete= csv.reader(miFicheroDelete,delimiter=',',quotechar='"')
-    registro_buscado=[]
-    for item in lecturaDelete:
-        if item[0] == str(id):
-            #encuentro el id buscado de mi registro
-            registro_buscado.append(item)
+        registro_buscado = select_by(id,"==")
+        
+        return render_template("delete.html",titulo="Borrar",data = registro_buscado)
+    else:#post
 
-    
-    return render_template("delete.html",titulo="Borrar",data = registro_buscado)
+        registros=select_by(id,"!=")
 
-@app.route("/update/<int:id>")
+        delete_by(id,registros=registros)
+
+        return redirect("/")
+
+
+@app.route("/update/<int:id>",methods=["GET","POST"])
 def update(id):
-    return f"El registro a editar es el de id:{id}"
-    #return render_template("update.html",titulo="Actualizar",tipoAccion="Actualización",tipoBoton="Editar",dataForm={})
+    if request.method == "POST":
+       
+       comprobar_error = validarFormulario(request.form)
+       if comprobar_error:
+             return render_template("update.html",titulo="Actualizar",tipoAccion="Actualización",tipoBoton="Editar",error = comprobar_error,dataForm=request.form,urlForm=f"/update/{id}")    
+      
+       formulario=request.form
+       registros= select_all()
+       update_item(id,registros,formulario)
 
-
+       return redirect("/")
+    else:
+      
+        registro_buscado= select_by(id,"dic")
+        
+        return render_template("update.html",titulo="Actualizar",tipoAccion="Actualización",tipoBoton="Editar",dataForm=registro_buscado,urlForm=f"/update/{id}")
 
 
 

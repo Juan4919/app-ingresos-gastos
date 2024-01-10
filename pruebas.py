@@ -47,6 +47,13 @@ else:
 
 """
 
-lista=[22,11,44,11,66,878,2323,343,67676,888,33]
+#lista=[22,11,44,11,66,878,2323,343,67676,888,33]
 
-print(lista[ len(lista)-1 ] )#obtener el ultimo valor de una lista
+#print(lista[ len(lista)-1 ] )#obtener el ultimo valor de una lista
+
+lista_csv = [5,"2024-04-01","kjfdkjdfk",12121] 
+lista_para_mostrar=[ ]
+
+#lista_para_mostrar.append(lista_csv)
+lista_para_mostrar = lista_csv
+print(lista_para_mostrar[1])

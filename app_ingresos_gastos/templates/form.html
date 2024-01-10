@@ -3,13 +3,13 @@
 {% block pageBase %}
 <h1>Esto es {{tipoAccion}} de Ingresos y Gastos</h1>
 
-<form method="POST">
+<form method="POST" action="{{urlForm}}">
   <label>Fecha:</label><br>
   <input type="date" name="fecha" value="{{dataForm['fecha']}}"><br>
   <label>Concepto:</label><br>
   <input type="text" name="concepto" value="{{dataForm['concepto']}}"><br>
   <label>Monto:</label><br>
-  <input type="number" name="monto" step="0.01" value="{{dataForm['monto']}}"><br><br>
+  <input type="number" name="monto" id="quantity" step="0.01" value="{{dataForm['monto']}}"><br><br>
   <button type="submit">{{tipoBoton}}</button><br>
 </form>
 <br>

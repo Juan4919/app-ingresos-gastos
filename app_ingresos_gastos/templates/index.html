@@ -2,7 +2,7 @@
 {% block pageBase %}
 <h1>Esto es una lista de Ingresos y Gastos</h1>
 
-<table>
+<table role="grid">
     <tr>
       <th>#</th>
       <th>Fecha</th>
@@ -18,8 +18,8 @@
         <td>{{ item[2] }}</td>
         <td>{{ item[3] }}€</td>
         <td>
-          <a href="/update/{{item[0]}}">Modificar</a>
-          <a href="/delete/{{item[0]}}">Eliminar</a>
+          <a href="/update/{{item[0]}}" >Modificar</a>
+          <a href="/delete/{{item[0]}}" >Eliminar</a>
 
         </td>
       </tr>
